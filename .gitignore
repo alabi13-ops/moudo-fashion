@@ -1,0 +1,6 @@
+# Données créées par le tableau de bord sur l'hébergement : ne jamais les écraser
+storage/*.json
+storage/sessions/
+uploads/p/*
+!uploads/p/.gitkeep
+.DS_Store

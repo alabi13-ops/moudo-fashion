@@ -1,0 +1,49 @@
+# Moudo Fashion — configuration Apache (Hostinger, LWS, o2switch…)
+Options -Indexes
+DirectoryIndex api/index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 1. Toujours en HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # 2. Fichiers et dossiers privés : interdits
+  RewriteRule ^(storage|api/_inc|\.git)(/|$) - [F,L]
+  RewriteRule ^(README\.md|vercel\.json|\.gitignore|\.htaccess|\.user\.ini)$ - [F,L]
+
+  # 3. Fichiers existants (photos, CSS, JS, vidéo) : servis directement
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # 4. Tout le reste passe par le routeur PHP
+  RewriteRule ^ api/index.php [L,QSA]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  Header unset X-Powered-By
+</IfModule>
+
+# Cache navigateur des fichiers statiques
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType video/mp4 "access plus 30 days"
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+</IfModule>
+
+# Envoi de photos depuis le téléphone (jusqu'à 10 Mo)
+<IfModule mod_php.c>
+  php_value upload_max_filesize 12M
+  php_value post_max_size 64M
+</IfModule>

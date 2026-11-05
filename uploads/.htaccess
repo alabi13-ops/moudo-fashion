@@ -1,0 +1,9 @@
+# Dossier des photos envoyées : aucune exécution de script, images uniquement
+Options -Indexes -ExecCGI
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar
+<FilesMatch "\.(?i:php\d?|phtml|phar|pl|py|cgi|sh|htaccess)$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
